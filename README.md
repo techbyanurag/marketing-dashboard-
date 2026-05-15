@@ -1,176 +1,191 @@
 <div align="center">
 
-Hermes Dashboard
-Open-source marketing operations control center for AI agent teams.
+# Hermes Dashboard
+
+**The open-source marketing operations control center for AI agent teams.**
+
 Run CRM, outreach, content, analytics, and automation workflows from one dashboard, powered by OpenClaw + SQLite.
 
-[ [ [ [ [
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://typescriptlang.org/)
+[![SQLite](https://img.shields.io/badge/SQLite-local-003B57?logo=sqlite&logoColor=white)](https://sqlite.org/)
+
+![Hermes Dashboard Overview](./public/hermes-dashboard-mission-control.png)
 
 </div>
 
-Alpha software — Hermes Dashboard is actively developed. Expect API, schema, and configuration changes between releases.
+---
 
-Why Hermes Dashboard?
-Hermes is designed for operator-led AI marketing systems that need execution visibility and centralized control.
+> **Alpha Software** — Hermes Dashboard is under active development. APIs, data models, and configuration behavior can change between releases.
 
-Unified marketing platform — CRM, outreach, content ops, analytics, experiments, and automations in one place.
+## Why Hermes Dashboard?
 
-OpenClaw-native — Dynamic agent and squad discovery, cron templates, and workspace/comms surfaces.
+Hermes is built for operator-led AI marketing systems where you need execution visibility and control, not disconnected tools.
 
-Local-first — Built on Next.js + SQLite so it runs locally without required external infra.
+- **Marketing system in one place** — CRM, outreach, content ops, analytics, experiments, and automations
+- **OpenClaw-native operations** — Dynamic agent/squad discovery, cron templates, workspace and comms surfaces
+- **Local-first stack** — Next.js + SQLite, no required external infra to run locally
+- **Secure-by-default template posture** — Session auth, API key support, host lock, and writeback controls disabled by default
+- **Production workflow support** — Deploy status, auditability, role-based access, and e2e-covered auth/API flows
 
-Secure-by-default — Session auth, API keys, host lock, and writeback controls are conservative by default.
+## Screenshots
 
-Production-ready features — Deploy status, audit trails, role-based access, and covered auth/API flows.
+### Overview
+![Hermes Dashboard CRM](./public/hermes-dashboard-mission-control.png)
 
-Screenshots
-Overview
-CRM
-Quick Start
-Requires pnpm (install with npm install -g pnpm or corepack enable).
+### CRM
+![Hermes Dashboard Overview](./public/hermes-dashboard-overview.png)
 
-bash
+## Quick Start
+
+> **Requires [pnpm](https://pnpm.io/installation)** — install with `npm install -g pnpm` or `corepack enable`.
+
+```bash
 git clone https://github.com/your-org/hermes-dashboard.git
 cd hermes-dashboard
 pnpm install
 pnpm env:bootstrap
 pnpm dev
-Open http://localhost:3000.
-On first run, an initial admin user is seeded from AUTH_USER / AUTH_PASS if the users table is empty.
+```
 
-Project Status
-What works
-CRM: leads, pipeline funnel, source tracking, engagement APIs.
+Open `http://localhost:3000`.
 
-Outreach: sequencing, pause/audit endpoints, suppression workflows.
+Initial admin access is seeded from `AUTH_USER` / `AUTH_PASS` on first run when the users table is empty.
 
-Content ops: calendar, items, performance APIs.
+## Project Status
 
-Analytics/KPIs: views with optional connectors (Plausible, GA4, social).
+### What Works
 
-OpenClaw discovery: dynamic agents and squads.
+- CRM leads, pipeline funnel, source tracking, and engagement APIs
+- Outreach sequencing, pause/audit endpoints, and suppression workflows
+- Content operations with calendar, item, and performance APIs
+- Analytics/KPI views with optional connectors (Plausible, GA4, social)
+- Dynamic OpenClaw agent discovery for agents and squads
+- Cron jobs/templates with OpenClaw-compatible schedule variants (`cron`, `every`, `at`)
+- Deploy status endpoint with OpenClaw config validation preflight
+- Session auth + API key auth with role-based access controls
 
-Cron templates: OpenClaw-compatible schedules (cron, every, at).
+### Known Limitations
 
-Deploy preflight: OpenClaw config validation endpoint.
+- Alpha surface area is still evolving; expect occasional schema/UI shifts
+- Certain integrations require external provider setup and credentials
 
-Auth: session + API key auth with role-based access.
+### Security Considerations
 
-Known limitations
-Alpha stage: expect occasional schema and UI changes.
+- Change seeded credentials (`AUTH_USER`, `AUTH_PASS`, `API_KEY`) before network deployment
+- Keep host lock enabled unless you explicitly need broader access (`HERMES_HOST_LOCK=local` by default)
+- Keep writeback flags disabled unless required:
+  - `HERMES_ALLOW_POLICY_WRITE=false`
+  - `HERMES_ALLOW_CRON_WRITE=false`
+  - `HERMES_ALLOW_WORKSPACE_WRITE=false`
+- Never commit real credentials or personal data
 
-Some integrations require external provider setup and credentials.
+## Architecture
 
-Security considerations
-Change seeded credentials (AUTH_USER, AUTH_PASS, API_KEY) before exposing to networks.
+| Layer | Technology |
+|-------|------------|
+| Framework | Next.js 16 (App Router) |
+| UI | React 19 + TypeScript |
+| Data | SQLite (local state in `./state`) |
+| Agent Runtime | OpenClaw CLI + filesystem integration |
+| Auth | Session cookie + API key + optional Google OAuth |
 
-Keep host lock enabled unless broader access is required (HERMES_HOST_LOCK=local by default).
+## Configuration
 
-Keep writeback flags disabled unless needed:
+See [`.env.example`](https://github.com/builderz-labs/marketing-dashboard/blob/main/.env.example) for the full list.
 
-HERMES_ALLOW_POLICY_WRITE=false
+### Required
 
-HERMES_ALLOW_CRON_WRITE=false
+- `AUTH_USER`
+- `AUTH_PASS` (minimum 10 chars)
+- `API_KEY`
+- `AUTH_COOKIE_SECURE` (`false` for HTTP local dev, `true` for HTTPS)
 
-HERMES_ALLOW_WORKSPACE_WRITE=false
+### OpenClaw / Multi-instance
 
-Never commit real credentials or personal data.
+- `HERMES_OPENCLAW_HOME`
+- `HERMES_DEFAULT_INSTANCE`
+- `HERMES_OPENCLAW_INSTANCES` (optional JSON array for multi-instance)
 
-Architecture
-Layer	Technology
-Framework	Next.js 16 (App Router)
-UI	React 19 + TypeScript
-Data	SQLite (local state in ./state)
-Agent Runtime	OpenClaw CLI + filesystem integration
-Auth	Session cookie + API key + optional Google OAuth
-Configuration
-See .env.example for the full list.
+### Optional 1Password Runtime Overlay
 
-Required
-AUTH_USER
+- `HERMES_1PASSWORD_MODE=off|auto|required` (`auto` is default behavior)
+- `HERMES_OP_ENV_FILE=/etc/hermes-dashboard/hermes-dashboard.op.env`
+- Example mapping: `ops/1password/hermes-dashboard.op.env.example`
 
-AUTH_PASS (minimum 10 chars)
+### Host Access Lock
 
-API_KEY
+- `HERMES_HOST_LOCK=local` (default)
+- `HERMES_HOST_LOCK=off`
+- `HERMES_HOST_LOCK=host1,host2`
 
-AUTH_COOKIE_SECURE (false for local HTTP dev, true for HTTPS)
+## Development
 
-OpenClaw / multi-instance
-HERMES_OPENCLAW_HOME
-
-HERMES_DEFAULT_INSTANCE
-
-HERMES_OPENCLAW_INSTANCES (optional JSON array)
-
-Optional 1Password runtime overlay
-HERMES_1PASSWORD_MODE=off|auto|required (auto default)
-
-HERMES_OP_ENV_FILE=/etc/hermes-dashboard/hermes-dashboard.op.env
-
-Example mapping: ops/1password/hermes-dashboard.op.env.example
-
-Host access lock
-HERMES_HOST_LOCK=local (default)
-
-HERMES_HOST_LOCK=off
-
-HERMES_HOST_LOCK=host1,host2
-
-Development
-Common commands:
-
-bash
+```bash
 pnpm dev
 pnpm build
 pnpm typecheck
 pnpm lint
 pnpm test
 pnpm test:e2e
-Template export and hygiene
-Before publishing or sharing a template:
+```
 
-bash
+## Template Export and Hygiene
+
+Before publishing as a template or sharing broadly:
+
+```bash
 ./scripts/template-audit.sh
 ./scripts/template-export.sh [output_dir]
-Export excludes sensitive/runtime artifacts such as .env*, database files, .next, and node_modules.
+```
 
-Open source
-License: MIT
+Export excludes sensitive/runtime artifacts like `.env*`, database files, `.next`, and `node_modules`.
 
-Security: SECURITY.md
+## Open Source
 
-Contributing: CONTRIBUTING.md
+- License: [MIT](https://github.com/builderz-labs/marketing-dashboard/blob/main/LICENSE)
+- Security: [SECURITY.md](https://github.com/builderz-labs/marketing-dashboard/blob/main/SECURITY.md)
+- Contributing: [CONTRIBUTING.md](https://github.com/builderz-labs/marketing-dashboard/blob/main/CONTRIBUTING.md)
+- Code of Conduct: [CODE_OF_CONDUCT.md](https://github.com/builderz-labs/marketing-dashboard/blob/main/CODE_OF_CONDUCT.md)
+- Third-Party Notices: [THIRD_PARTY_NOTICES.md](https://github.com/builderz-labs/marketing-dashboard/blob/main/THIRD_PARTY_NOTICES.md)
 
-Code of Conduct: CODE_OF_CONDUCT.md
+## Contributing
 
-Third-party notices: THIRD_PARTY_NOTICES.md
+Contributions welcome. Read the [contribution guidelines](https://github.com/builderz-labs/marketing-dashboard/blob/main/CONTRIBUTING.md) first.
 
-Contributing
-Contributions are welcome — please read CONTRIBUTING.md before opening PRs.
+## ❤️ Support the Project
 
-Support the project
-If Hermes helps you, consider supporting development.
+If you find this project useful, consider supporting my open-source work.
 
-[
+**Solana donations**
 
-Solana donations:
-BYLu8XD8hGDUtdRBWpGWu5HKoiPrWqCxYFSh4oxXuvPg
+`BYLu8XD8hGDUtdRBWpGWu5HKoiPrWqCxYFSh4oxXuvPg`
+
+---
 
 <div align="center">
 
-Need agent infrastructure, trading systems, or Solana apps built for your team?
-Builderz ships production AI systems — 32+ products across 15 countries.
-Get in touch | @nyk_builderz
+**Need agent infrastructure, trading systems, or Solana applications built for your team?**
+
+[Builderz](https://builderz.dev/) ships production AI systems — 32+ products across 15 countries.
+
+[Get in touch](https://builderz.dev/) | [@nyk_builderz](https://x.com/nyk_builderz)
 
 </div>
 
-License
-[
-To the extent possible under law, the authors have waived all copyright and related or neighboring rights to this work.
+## License
+
+[![CC0](https://licensebuttons.net/p/zero/1.0/88x31.png)](https://creativecommons.org/publicdomain/zero/1.0/)
+
+To the extent possible under law, the authors have waived all copyright and
+related or neighboring rights to this work.
+
+---
 
 <p align="center">
-<a href="https://star-history.com/#your-org/hermes-dashboard&Date">
-<img src="https://api.star-history.com/svg?repos=your-org/hermes-dashboard&type=Date" alt="Star History" width="400">
-</a>
+  <a href="https://star-history.com/#your-org/hermes-dashboard&Date">
+    <img src="https://api.star-history.com/svg?repos=your-org/hermes-dashboard&type=Date" alt="Star History" width="400">
+  </a>
 </p>
-
